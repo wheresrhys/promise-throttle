@@ -6,7 +6,7 @@ function getRemover (arr, target) {
 	};
 }
 
-class Directly {
+class Dreckly {
 	constructor (concurrence, funcs) {
 		this.results = [];
 		this.concurrence = concurrence;
@@ -14,14 +14,14 @@ class Directly {
 		this.terminates = Array.isArray(this.funcs);
 		this.cancelled = false;
 		if (!Array.isArray(this.funcs)) {
-			this.funcs.attachDirectlyInstance(this);
+			this.funcs.attachDrecklyInstance(this);
 		}
 		this.competitors = [];
 	}
 
 	run () {
 		if (typeof this.funcs[0] !== 'function') {
-			throw new TypeError('directly expects a list functions that return a Promise, not a list of Promises')
+			throw new TypeError('dreckly expects a list functions that return a Promise, not a list of Promises')
 		}
 		if (this.terminates) {
 			if (this.funcs.length <= this.concurrence) {
@@ -111,8 +111,8 @@ class Directly {
 }
 
 module.exports = function SmartConstructor (concurrence, funcs) {
-	const directly = new Directly(concurrence, funcs)
-	return (this instanceof SmartConstructor) ? directly : directly.run();
+	const dreckly = new Dreckly(concurrence, funcs)
+	return (this instanceof SmartConstructor) ? dreckly : dreckly.run();
 };
 
 module.exports.Queue = require('./lib/queue');
