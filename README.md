@@ -1,4 +1,4 @@
-# directly
+# dreckly
 
 ## Like Promise.all, only less so
 
@@ -8,14 +8,14 @@ This module could more descriptively be named Promise.allButNotAllAtOnce. It tak
 Now supports throttling of potentially infinite queues of Promises (see notes on the `Queue` class below)
 
 ## About the name
-In the West Country people will often promise to do things 'directly' `[drekt-lee]`, meaning they'll do it when they're good and ready, possibly never. Example usage:
+In the West Country people will often promise to do things 'dreckly' `[drekt-lee]`, meaning they'll do it when they're good and ready, possibly never. Example usage:
 
-> I'll wash the dishes directly, my lover
+> I'll wash the dishes dreckly, my lover
 
 ## Usage
 
 ```js
-const directly = require('directly');
+const dreckly = require('dreckly');
 const urls = []; // a big array of urls
 const fetchers = urls.map(function (url) {
     return function () {
@@ -24,7 +24,7 @@ const fetchers = urls.map(function (url) {
 });
 
 
-directly(10, fetchers)
+dreckly(10, fetchers)
     .then(function (results) {
         // handle exactly as if it was a Promise.all()
     });
@@ -34,8 +34,8 @@ directly(10, fetchers)
 Can also be called as a constructor (in which case the `.run()` method should be used)
 
 ```js
-const Directly = require('Directly');
-const throttledRequests = new Directly(10, fetchers)
+const Dreckly = require('Dreckly');
+const throttledRequests = new Dreckly(10, fetchers)
 
 throttledRequests
     .run()
@@ -43,21 +43,21 @@ throttledRequests
         // handle exactly as if it was a Promise.all()
     })
 
- // can be used to stop the directly instance prematurely
+ // can be used to stop the dreckly instance prematurely
 throttledRequests.terminate()
 ```
 
 To handle an infinite queue of promises use the `Queue` class to wrap your array of functions
 
 ```js
-fetchers = new directly.Queue(fetchers);
-directly(10, fetchers)
+fetchers = new dreckly.Queue(fetchers);
+dreckly(10, fetchers)
     .catch(function (errorObject) {
         // You can handle any errors in here
         // The error object has 3 properties
         //  error: The error thrown
         //  nextError: A promise which will reject the next time an error is encountered
-        //  terminate: A function to call which will terminate the directly instance
+        //  terminate: A function to call which will terminate the dreckly instance
     });
 
 // use push to add to the execution queue. Will work even if the queue has fallen idle

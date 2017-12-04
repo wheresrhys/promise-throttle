@@ -1,7 +1,7 @@
 'use strict';
 
 var expect = require('chai').expect;
-var Directly = require('../directly');
+var Dreckly = require('../dreckly');
 
 var setupPromises = function (n) {
 
@@ -49,7 +49,7 @@ describe('concordance with Promise.all', function () {
 		it('should resolve if they all resolve', function (done) {
 			var promises = setupPromises(2);
 
-			new Directly(3, promises.functions).run()
+			new Dreckly(3, promises.functions).run()
 				.then(function (res) {
 					expect(res).to.eql([0, 1]);
 					done();
@@ -64,7 +64,7 @@ describe('concordance with Promise.all', function () {
 		it('should reject if any of them reject', function (done) {
 			var promises = setupPromises(2);
 
-			new Directly(3, promises.functions).run()
+			new Dreckly(3, promises.functions).run()
 				.catch(function (res) {
 					expect(res).to.equal('err1');
 					done();
@@ -79,7 +79,7 @@ describe('concordance with Promise.all', function () {
 		it('should resolve if they all resolve', function (done) {
 			var promises = setupPromises(3);
 
-			new Directly(3, promises.functions).run()
+			new Dreckly(3, promises.functions).run()
 				.then(function (res) {
 					expect(res).to.eql([0, 1, 2]);
 					done();
@@ -94,7 +94,7 @@ describe('concordance with Promise.all', function () {
 		it('should reject if any of them reject', function (done) {
 			var promises = setupPromises(3);
 
-			new Directly(3, promises.functions).run()
+			new Dreckly(3, promises.functions).run()
 				.catch(function (res) {
 					expect(res).to.equal('err1');
 					done();
@@ -108,7 +108,7 @@ describe('concordance with Promise.all', function () {
 		it('should resolve if they all resolve', function (done) {
 			var promises = setupPromises(4);
 
-			new Directly(3, promises.functions).run()
+			new Dreckly(3, promises.functions).run()
 				.then(function (res) {
 					expect(res).to.eql([0, 1, 2, 3]);
 					done();
@@ -123,7 +123,7 @@ describe('concordance with Promise.all', function () {
 		it('should reject if any of them reject', function (done) {
 			var promises = setupPromises(4);
 
-			new Directly(3, promises.functions).run()
+			new Dreckly(3, promises.functions).run()
 				.catch(function (res) {
 					expect(res).to.equal('err1');
 					done();
@@ -135,7 +135,7 @@ describe('concordance with Promise.all', function () {
 		it('should preserve promise order in the results', function () {
 			var promises = setupPromises(4);
 
-			new Directly(3, promises.functions).run()
+			new Dreckly(3, promises.functions).run()
 				.then(function (res) {
 					expect(res).to.eql([1,2,3,4]);
 					done();
@@ -158,7 +158,7 @@ describe('throttling', function () {
 			spyVal = true;
 		});
 
-		new Directly(3, promises.functions).run()
+		new Dreckly(3, promises.functions).run()
 
 		expect(spyVal).to.be.false;
 	});
@@ -179,7 +179,7 @@ describe('throttling', function () {
 			return func4();
 		}
 
-		new Directly(3, promises.functions).run()
+		new Dreckly(3, promises.functions).run()
 
 		expect(spyVals).to.eql([]);
 
@@ -208,7 +208,7 @@ describe('functional calling', function () {
 	it('should be callable as a function', function (done) {
 		var promises = setupPromises(3);
 
-		Directly(3, promises.functions)
+		Dreckly(3, promises.functions)
 			.then(function (res) {
 				expect(res).to.eql([0, 1, 2]);
 				done();
@@ -225,14 +225,14 @@ describe('infinite queueing', function () {
 
 	it('should call all on startup if throttle limit not reached', function (done) {
 		const result = [];
-		const funcs = new Directly.Queue([1, 2].map(i => {
+		const funcs = new Dreckly.Queue([1, 2].map(i => {
 			return () => {
 				result.push(i);
 				return Promise.resolve(i);
 			}
 		}))
 
-		new Directly(3, funcs).run()
+		new Dreckly(3, funcs).run()
 		setTimeout(() => {
 			expect(result).to.eql([1, 2]);
 			done();
@@ -241,14 +241,14 @@ describe('infinite queueing', function () {
 
 	it('should only call up to the throttle limit on startup', function (done) {
 		const result = [];
-		const funcs = new Directly.Queue([1, 2, 3].map(i => {
+		const funcs = new Dreckly.Queue([1, 2, 3].map(i => {
 			return () => {
 				result.push(i);
 				return new Promise(() => null);
 			}
 		}))
 
-		new Directly(2, funcs).run()
+		new Dreckly(2, funcs).run()
 		setTimeout(() => {
 			expect(result).to.eql([1, 2]);
 			done();
@@ -257,9 +257,9 @@ describe('infinite queueing', function () {
 
 	it('should seamlessly call any promise function added after startup', function (done) {
 		const promises = setupPromises(3);
-		const funcs = new Directly.Queue(promises.functions);
+		const funcs = new Dreckly.Queue(promises.functions);
 
-		new Directly(3, funcs).run();
+		new Dreckly(3, funcs).run();
 		let spyCalled = false;
 		const spy = () => {
 			spyCalled = true;
@@ -280,13 +280,13 @@ describe('infinite queueing', function () {
 	});
 
 	it('should restart if functions are pushed when it is idling', function (done) {
-		const funcs = new Directly.Queue([1, 2].map(i => {
+		const funcs = new Dreckly.Queue([1, 2].map(i => {
 			return () => {
 				return Promise.resolve(i);
 			}
 		}))
 
-		new Directly(3, funcs).run()
+		new Dreckly(3, funcs).run()
 		let spyCalled = false;
 		const spy = () => {
 			spyCalled = true;
@@ -301,13 +301,13 @@ describe('infinite queueing', function () {
 	});
 
 	it('should still apply concurrence limits to functions added after startup', function (done) {
-		const funcs = new Directly.Queue([1, 2].map(i => {
+		const funcs = new Dreckly.Queue([1, 2].map(i => {
 			return () => {
 				return Promise.resolve(i);
 			}
 		}))
 
-		new Directly(3, funcs).run()
+		new Dreckly(3, funcs).run()
 		let spyCalled = false;
 		const spy = () => {
 			spyCalled = true;
@@ -325,11 +325,11 @@ describe('infinite queueing', function () {
 	});
 
 	it('should provide a promisey interface to handle errors', function (done) {
-		const funcs = new Directly.Queue([() => {
+		const funcs = new Dreckly.Queue([() => {
 			return Promise.reject('test error1');
 		}]);
 
-		var d = new Directly(3, funcs);
+		var d = new Dreckly(3, funcs);
 
 		var p = d.run()
 			.catch(err1 => {
